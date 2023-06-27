@@ -30,7 +30,13 @@ const deleteCard = (req, res) => {
       }
       res.status(NO_ERROR).send(card);
     })
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка: ${err}` }));
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные  для удаления карточки.' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
+      }
+    });
 };
 
 const getCards = (req, res) => {
@@ -55,7 +61,7 @@ const likeCard = (req, res) => {
       res.status(NO_ERROR).send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.kind === 'ObjectId') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
@@ -77,7 +83,7 @@ const dislikeCard = (req, res) => {
       res.status(NO_ERROR).send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.kind === 'ObjectId') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });

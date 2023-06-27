@@ -32,9 +32,15 @@ const getUser = (req, res) => {
         res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь по указанному id не найден.' });
         return;
       }
-      res.status(200).send(user);
+      res.status(NO_ERROR).send(user);
     })
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' }));
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для вызова пользователя.' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
+      }
+    });
 };
 
 const updateUser = (req, res) => {
