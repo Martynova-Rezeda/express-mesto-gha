@@ -21,7 +21,6 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const owner = req.user._id;
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
@@ -31,7 +30,7 @@ const deleteCard = (req, res) => {
       res.status(NO_ERROR).send(card);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные  для удаления карточки.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
@@ -42,7 +41,7 @@ const deleteCard = (req, res) => {
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR));
 };
 
 const likeCard = (req, res) => {
@@ -51,8 +50,8 @@ const likeCard = (req, res) => {
     {
       $addToSet: { likes: req.user._id },
     },
-    { new: true, runValidators: true },
-  ).populate('owner')
+    { new: true },
+  ).populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND_ERROR).send({ message: 'Передан несуществующий _id карточки.' });
@@ -61,7 +60,7 @@ const likeCard = (req, res) => {
       res.status(NO_ERROR).send(card);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
@@ -83,7 +82,7 @@ const dislikeCard = (req, res) => {
       res.status(NO_ERROR).send(card);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });

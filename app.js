@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const userrouter = require('./routes/users');
-const cardrouter = require('./routes/cards');
+const routes = require('./routes');
 
 const NOT_FOUND_ERROR = 404;
 
@@ -18,8 +17,7 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/users', userrouter);
-app.use('/cards', cardrouter);
+app.use(routes);
 app.use('*', (req, res) => {
   res.status(NOT_FOUND_ERROR).send({ message: 'Некорректные данные' });
 });

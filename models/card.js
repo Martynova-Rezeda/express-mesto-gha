@@ -9,6 +9,7 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
+    ref: 'user',
     required: true,
   },
   owner: {
@@ -18,7 +19,7 @@ const cardSchema = new mongoose.Schema({
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
-    default: {},
+    default: [],
   }],
   createdAt: {
     type: Date,

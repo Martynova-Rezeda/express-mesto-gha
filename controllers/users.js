@@ -22,7 +22,9 @@ const createUser = (req, res) => {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(NO_ERROR).send(users))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR));
+    .catch(() => {
+      res.status(INTERNAL_SERVER_ERROR);
+    });
 };
 
 const getUser = (req, res) => {
@@ -35,7 +37,7 @@ const getUser = (req, res) => {
       res.status(NO_ERROR).send(user);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для вызова пользователя.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию' });
