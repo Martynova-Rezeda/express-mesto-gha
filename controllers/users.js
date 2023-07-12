@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
@@ -20,7 +19,7 @@ const login = (req, res, next) => {
       );
 
       res.send({ token });
-    }).catch((err) => next(new UnauthorizedError(err.message)));
+    }).catch(next);
 };
 
 const createUser = (req, res, next) => {
